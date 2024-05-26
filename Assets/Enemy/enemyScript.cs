@@ -7,35 +7,51 @@ public class enemyScript : MonoBehaviour
 {
     public int health;
     public float moveSpeed;
-    public Rigidbody2D rb;
+    Rigidbody2D rb;
+    public Animator anim;
+    public AudioClip hurtSFX;
 
+    public Behaviour[] components;
 
-    // Start is called before the first frame update
+    public scoreScript scoreScript;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (health < 0)
+        float time = Time.deltaTime;
+        if (!components[0].enabled)
         {
-            Destroy(gameObject);
+            Destroy(gameObject, 1.5f);
         }
     }
 
     public void takeDamage(int damage)
     {
-        if (health < 0)
+        if (health <= 0)
         {
-            Debug.Log("dead");
-            Destroy(gameObject);
+            anim.SetTrigger("die");
+
+            gameData.score += 1;
+
+            foreach  (Behaviour component in components)
+                component.enabled = false;
         }
 
         health -= damage;
-        Debug.Log("ouch");  
+        playSound(hurtSFX);
+
+        scoreScript.score();
     }
 
-
+    public void playSound(AudioClip clip)
+    {
+        AudioSource aud = gameObject.AddComponent<AudioSource>();
+        aud.clip = clip;
+        aud.Play();
+        Destroy(aud, clip.length);
+    }
 }

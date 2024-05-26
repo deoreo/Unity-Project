@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class enemyDamage : MonoBehaviour
 {
-
     public float attackCooldown;
     public int damage;
 
@@ -12,8 +11,9 @@ public class enemyDamage : MonoBehaviour
     public float colliderDistance;
 
     public healthScript playerHealth;
+    public galaw playerMovement;
 
-    public BoxCollider2D boxCollider;
+    public Collider2D enemyCollider;
     public LayerMask playerLayer;
 
     private float cooldownTimer = Mathf.Infinity;
@@ -33,10 +33,19 @@ public class enemyDamage : MonoBehaviour
         {
             if (cooldownTimer >= attackCooldown)
             {
+                //golemScript.canMove = false;
                 cooldownTimer = 0;
+
                 anim.SetBool("isWalking", false);
                 anim.SetTrigger("attack");
 
+                playerMovement.knockBackCounter = playerMovement.knockBackDistance;
+                if (playerMovement.transform.position.x <= transform.position.x)
+                    playerMovement.knockBackRight = true;
+                else
+                    playerMovement.knockBackRight = false;
+                
+                playerHealth.takeDamage(damage);
             }
         }
        
@@ -45,26 +54,38 @@ public class enemyDamage : MonoBehaviour
 
     private bool playerDetected()
     {
-        RaycastHit2D hit =
-            Physics2D.BoxCast(boxCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
-            new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z),
+        if (enemyCollider != null)
+        {
+            RaycastHit2D hit =
+            Physics2D.BoxCast(enemyCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
+            new Vector3(enemyCollider.bounds.size.x * range, enemyCollider.bounds.size.y, enemyCollider.bounds.size.z),
             0, Vector2.left, 0, playerLayer);
 
-        return hit.collider != null;
+            return hit.collider != null;
+        }
+
+        return false;
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(boxCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
-            new Vector3(boxCollider.bounds.size.x * range, boxCollider.bounds.size.y, boxCollider.bounds.size.z));
+        Gizmos.DrawWireCube(enemyCollider.bounds.center + transform.right * range * transform.localScale.x * colliderDistance,
+            new Vector3(enemyCollider.bounds.size.x * range, enemyCollider.bounds.size.y, enemyCollider.bounds.size.z));
     }
 
-    private void damagePlayer()
+
+    public void OnCollisionEnter2D(Collision2D collision)
     {
-        if (playerDetected())
+        if (collision.gameObject.CompareTag("Player"))
         {
-            playerHealth.health -= damage;
+            playerMovement.knockBackCounter = playerMovement.knockBackDistance;
+            if (playerMovement.transform.position.x <= transform.position.x)
+                playerMovement.knockBackRight = true;
+            else
+                playerMovement.knockBackRight = false;
+
+            playerHealth.takeDamage(damage);
         }
     }
 }

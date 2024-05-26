@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class golemScript : enemyScript
+public class golemScript : MonoBehaviour
 {
     public GameObject player;
     public bool facingRight = true;
 
+    public enemyScript enemyScript;
     public detectionScript detectionScript;
 
     Animator anim; 
@@ -21,6 +22,8 @@ public class golemScript : enemyScript
     {
         if (!anim.GetBool("attack"))
             anim.SetBool("isWalking", detectionScript.detected);
+        
+            
         if (detectionScript.detected)
         {
             float distance = Vector2.Distance(transform.position, player.transform.position);
@@ -31,9 +34,7 @@ public class golemScript : enemyScript
             else if (direction.x < 0 && facingRight)
                 flip();
 
-            //anim.SetBool("isWalking", true);
-            Debug.Log(direction.x);
-            transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, moveSpeed * Time.deltaTime);
+                transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, enemyScript.moveSpeed * Time.deltaTime);
         }
         if (!detectionScript.detected)
         {

@@ -16,6 +16,12 @@ public class galaw : MonoBehaviour
     public bool facingRight = true;
     public AudioClip jumpSFX, landSFX;
 
+    public float knockBackForce;
+    public float knockBackCounter;
+    public float knockBackDistance;
+
+    public bool knockBackRight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,9 +32,18 @@ public class galaw : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         float hAxis = Input.GetAxis("Horizontal");
-        rb.velocity = new Vector2(hAxis * moveSpeed, rb.velocity.y);
+        if (knockBackCounter <= 0)
+            rb.velocity = new Vector2(hAxis * moveSpeed, rb.velocity.y);
+        else
+        {
+            if (knockBackRight == true)
+                rb.velocity = new Vector2(-knockBackForce * 2, knockBackForce/2);
+            else
+                rb.velocity = new Vector2(knockBackForce * 2, knockBackForce/2);
+
+            knockBackCounter -= Time.deltaTime;
+        }
 
         // Palingunin character
         if (Input.GetAxisRaw("Horizontal") > 0 && !facingRight)
@@ -42,9 +57,8 @@ public class galaw : MonoBehaviour
         // Check if nasa sahig gamit maliit na collider sa paa
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            //doubleJump = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            //rb.AddForce(new Vector2(rb.velocity.x, jumpForce), ForceMode2D.Impulse);
+         
             anim.SetTrigger("jump");
             playSound(jumpSFX);
         }

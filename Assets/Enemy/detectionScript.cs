@@ -39,13 +39,6 @@ public class detectionScript : MonoBehaviour
         StartCoroutine(detectCoroutine());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //Vector2 direction = player.transform.position - transform.position;
-
-    }
-
     IEnumerator detectCoroutine()
     {
         yield return new WaitForSeconds(detectDelay);

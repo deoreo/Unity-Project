@@ -10,10 +10,7 @@ public class Weapon : MonoBehaviour
 
     float lastShot;
     public float attackCooldown = 1.5f;
-    public float spearRange = 0.5f;
-    public int spearDamage = 50;
 
-    public LineRenderer spearRaycast;
     public AudioClip LaserSFX;
 
     void Start()
@@ -29,9 +26,6 @@ public class Weapon : MonoBehaviour
             Shoot();
 
         }
-
-        /*if (Input.GetButton("Fire2"))
-            StartCoroutine(Tusok(1f));*/
     }
 
     void Shoot()
@@ -46,30 +40,4 @@ public class Weapon : MonoBehaviour
         // Spawn bullet
         Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
     }
-
-    /*IEnumerator Tusok(float waitTime)
-    {
-        // Cooldown
-        if (Time.time - lastShot < attackCooldown)
-            yield break;
-        lastShot = Time.time;
-        RaycastHit2D hitinfo = Physics2D.Raycast(firePoint.position, firePoint.right, spearRange);
-
-        if (hitinfo)
-        {
-            enemyScript enemy = hitinfo.transform.GetComponent<enemyScript>();
-            if (enemy != null)
-            {
-                Debug.Log("natusok");
-                enemy.takeDamage(spearDamage);
-            }
-
-            spearRaycast.SetPosition(0, firePoint.position);
-            spearRaycast.SetPosition(1, hitinfo.point);
-        }
-
-        spearRaycast.enabled = true;
-        yield return new WaitForSeconds(waitTime);
-        spearRaycast.enabled = false;
-    }*/
 }
